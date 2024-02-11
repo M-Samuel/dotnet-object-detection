@@ -13,6 +13,7 @@ var outputFolder = Path.Combine(assetsPath, "images", "output");
 
 // Initialize MLContext
 MLContext mlContext = new MLContext();
+string[] selectedLabels = new string[] { "person", "car", "dog" };
 
 try
 {
@@ -31,7 +32,7 @@ try
 
     var boundingBoxes =
         probabilities
-        .Select(probability => parser.ParseOutputs(probability))
+        .Select(probability => parser.ParseOutputs(probability, 0.2F))
         .Select(boxes => parser.FilterBoundingBoxes(boxes, 5, .5F));
 
     // Draw bounding boxes for detected objects in each of the images
@@ -125,7 +126,8 @@ void LogDetectedObjects(string imageName, IList<YoloBoundingBox> boundingBoxes)
 
     foreach (var box in boundingBoxes)
     {
-        Console.WriteLine($"{box.Label} and its Confidence score: {box.Confidence}");
+        if(selectedLabels.Contains(box.Label))
+            Console.WriteLine($"{box.Label} and its Confidence score: {box.Confidence}");
     }
 
     Console.WriteLine("");
